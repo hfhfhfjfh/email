@@ -1,0 +1,33 @@
+name: Fix Firebase Email
+
+on:
+  workflow_dispatch:
+    inputs:
+      old_email:
+        description: "Old (incorrect) email"
+        required: true
+      new_email:
+        description: "New (correct) email"
+        required: true
+
+jobs:
+  update-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Firebase Admin SDK
+        run: npm install firebase-admin
+
+      - name: Run update script
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+          OLD_EMAIL: ${{ github.event.inputs.old_email }}
+          NEW_EMAIL: ${{ github.event.inputs.new_email }}
+        run: node updateEmail.js
